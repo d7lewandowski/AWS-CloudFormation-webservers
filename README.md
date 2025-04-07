@@ -1,7 +1,7 @@
 # AWS SimuLearn - Cloud First Steps
 
 This CloudFormation template creates a basic VPC, subnets, an internet gateway, a route table with routes, and launches two EC2 instances with associated security groups.
-
+*UserData is encode base64
 ## Overview
 
 The template provisions:
