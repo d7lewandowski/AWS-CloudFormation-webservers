@@ -1,6 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: AWS SimuLearn - Cloud First Steps
-
 Resources:
   LabVpc:
     Type: AWS::EC2::VPC
@@ -10,7 +9,6 @@ Resources:
       Tags:
         - Key: lab1
           Value: production
-
   PublicSubnetSubnet1:
     Type: AWS::EC2::Subnet
     DeletionPolicy: Delete
@@ -19,7 +17,6 @@ Resources:
       AvailabilityZone: us-east-1a
       CidrBlock: 10.0.0.0/24
       MapPublicIpOnLaunch: true
-
   PublicSubnetSubnet2:
     Type: AWS::EC2::Subnet
     DeletionPolicy: Delete
@@ -28,7 +25,6 @@ Resources:
       AvailabilityZone: us-east-1b
       CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: true
-    # Security Group
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     DeletionPolicy: Delete
@@ -40,17 +36,33 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
-
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
   WebServer01:
     Type: AWS::EC2::Instance
     DeletionPolicy: Delete
     Properties:
       ImageId: ami-00a929b66ed6e0de6
+      AvailabilityZone: us-east-1a
       InstanceType: t3.micro
       BlockDeviceMappings:
         - DeviceName: /dev/sdm
@@ -71,6 +83,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       ImageId: ami-00a929b66ed6e0de6
+      AvailabilityZone: us-east-1b
       InstanceType: t3.micro
       BlockDeviceMappings:
         - DeviceName: /dev/sdm
@@ -86,24 +99,20 @@ Resources:
           SubnetId: !Ref PublicSubnetSubnet2
           GroupSet:
             - !Ref InstanceSecurityGroup
-
   MyInternetGateway:
     Type: AWS::EC2::InternetGateway
     DeletionPolicy: Delete
-
   MyInternetGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     DeletionPolicy: Delete
     Properties:
       VpcId: !Ref LabVpc
       InternetGatewayId: !Ref MyInternetGateway
-
   MyRouteTable:
     Type: AWS::EC2::RouteTable
     DeletionPolicy: Delete
     Properties:
       VpcId: !Ref LabVpc
-
   MyRoute:
     Type: AWS::EC2::Route
     DeletionPolicy: Delete
@@ -111,21 +120,18 @@ Resources:
       RouteTableId: !Ref MyRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref MyInternetGateway
-
   MySubnetRoute1TableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     DeletionPolicy: Delete
     Properties:
       SubnetId: !Ref PublicSubnetSubnet1
       RouteTableId: !Ref MyRouteTable
-
   MySubnetRoute2TableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     DeletionPolicy: Delete
     Properties:
       SubnetId: !Ref PublicSubnetSubnet2
       RouteTableId: !Ref MyRouteTable
-
 Outputs:
   VpcId:
     Description: The VPC ID
