@@ -2,6 +2,9 @@
 
 This CloudFormation template creates a basic VPC, subnets, an internet gateway, a route table with routes, and launches two EC2 instances with associated security groups.
 *UserData is encode base64
+
+![Diagram overview](diagram_ec2_servers.png)
+
 ## Overview
 
 The template provisions:
